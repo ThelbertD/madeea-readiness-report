@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Readiness review across two MadeEA tracks: putting MadeEA OS on a custom domain behind the OmniRoute gateway, and expanding the DM setter beyond Instagram."><title>MadeEA Readiness Review</title>
+<style>
+  :root{
+    --paper:#f5f6f9;
+    --card:#ffffff;
+    --ink:#1a1926;
+    --ink-2:#4a4a5e;
+    --ink-3:#7b7b90;
+    --rule:#dfe1e9;
+    --rule-2:#c9ccd8;
+    --accent:#4c3f8f;
+    --accent-soft:#ece9f7;
+    --ok:#1f6f60;
+    --ok-soft:#e2f0ec;
+    --warn:#96620a;
+    --warn-soft:#f8eeda;
+    --stop:#a5304a;
+    --stop-soft:#fae7ea;
+    --shadow:0 1px 2px rgba(26,25,38,.05), 0 8px 24px -16px rgba(26,25,38,.35);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:system-ui,"Segoe UI",Roboto,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#141420;
+      --card:#1c1c2b;
+      --ink:#eceaf4;
+      --ink-2:#b0aec4;
+      --ink-3:#807e97;
+      --rule:#2b2b3d;
+      --rule-2:#3b3b52;
+      --accent:#a99bf0;
+      --accent-soft:#282442;
+      --ok:#63c3ac;
+      --ok-soft:#182f2b;
+      --warn:#e0aa53;
+      --warn-soft:#332916;
+      --stop:#ef8098;
+      --stop-soft:#331d25;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#141420;
+    --card:#1c1c2b;
+    --ink:#eceaf4;
+    --ink-2:#b0aec4;
+    --ink-3:#807e97;
+    --rule:#2b2b3d;
+    --rule-2:#3b3b52;
+    --accent:#a99bf0;
+    --accent-soft:#282442;
+    --ok:#63c3ac;
+    --ok-soft:#182f2b;
+    --warn:#e0aa53;
+    --warn-soft:#332916;
+    --stop:#ef8098;
+    --stop-soft:#331d25;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    margin:0;
+    padding:0 20px 96px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:940px;margin:0 auto}
+
+  /* ---- masthead ---- */
+  header{
+    padding:56px 0 28px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .kicker{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .kicker .dot{color:var(--ink-3)}
+  h1{
+    font-family:var(--serif);
+    font-size:clamp(30px,5.2vw,46px);
+    line-height:1.1;
+    letter-spacing:-.015em;
+    font-weight:600;
+    margin:0;
+    text-wrap:balance;
+  }
+  .standfirst{
+    font-family:var(--serif);
+    font-size:clamp(17px,2.2vw,20px);
+    line-height:1.5;
+    color:var(--ink-2);
+    max-width:62ch;
+    margin:0;
+  }
+
+  /* ---- stat band ---- */
+  .band{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    border-top:none;
+    margin-bottom:8px;
+  }
+  .stat{background:var(--card);padding:18px 18px 16px;display:flex;flex-direction:column;gap:3px}
+  .stat b{
+    font-family:var(--serif);
+    font-size:30px;
+    font-weight:600;
+    line-height:1;
+    letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat span{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+  }
+  .stat.hold b{color:var(--warn)}
+  .stat.open b{color:var(--stop)}
+
+  /* ---- sections ---- */
+  section{padding-top:46px}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    display:block;
+    margin-bottom:8px;
+  }
+  h2{
+    font-family:var(--serif);
+    font-size:clamp(23px,3vw,30px);
+    font-weight:600;
+    letter-spacing:-.012em;
+    line-height:1.2;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .lede{color:var(--ink-2);max-width:66ch;margin:0 0 22px}
+  h3{
+    font-family:var(--sans);
+    font-size:16px;
+    font-weight:650;
+    margin:0;
+    letter-spacing:-.005em;
+  }
+
+  /* ---- workflow cards ---- */
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+  .flow{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    box-shadow:var(--shadow);
+    padding:20px 20px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .flow .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .meta{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-3);
+    letter-spacing:.04em;
+    white-space:nowrap;
+  }
+  .flow p{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.55}
+  .chain{
+    font-family:var(--mono);
+    font-size:11.5px;
+    line-height:1.9;
+    color:var(--ink-2);
+    background:var(--accent-soft);
+    border-radius:3px;
+    padding:10px 12px;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+  .chain i{font-style:normal;color:var(--accent);font-weight:600}
+  .flow ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+  .flow li{font-size:14.5px;color:var(--ink-2)}
+  .flow li b{color:var(--ink);font-weight:600}
+
+  /* ---- tables ---- */
+  .tw{overflow-x:auto;border:1px solid var(--rule);border-radius:4px;background:var(--card);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+  th{
+    text-align:left;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    font-weight:500;
+    padding:11px 16px;
+    border-bottom:1px solid var(--rule-2);
+    white-space:nowrap;
+  }
+  td{padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
+  tr:last-child td{border-bottom:none}
+  td strong{color:var(--ink);font-weight:600}
+  .sub{display:block;font-size:13px;color:var(--ink-3);margin-top:2px;line-height:1.45}
+  td.who{font-family:var(--mono);font-size:12px;color:var(--ink-3);white-space:nowrap}
+
+  .pill{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:3px;
+    white-space:nowrap;
+  }
+  .ok{background:var(--ok-soft);color:var(--ok)}
+  .warn{background:var(--warn-soft);color:var(--warn)}
+  .stop{background:var(--stop-soft);color:var(--stop)}
+
+  /* ---- checks ---- */
+  .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px 22px}
+  .check{display:flex;gap:10px;align-items:flex-start}
+  .tick{color:var(--ok);font-size:14px;line-height:1.55;flex:none}
+  .check b{display:block;font-size:14.5px;font-weight:600}
+  .check span.d{display:block;font-size:13px;color:var(--ink-3);line-height:1.45}
+
+  /* ---- ordered next list ---- */
+  ol.next{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  ol.next li{
+    counter-increment:s;
+    display:flex;
+    gap:14px;
+    padding:13px 0;
+    border-bottom:1px solid var(--rule);
+    align-items:baseline;
+  }
+  ol.next li:last-child{border-bottom:none}
+  ol.next li::before{
+    content:counter(s);
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--accent);
+    flex:none;
+    width:16px;
+    font-variant-numeric:tabular-nums;
+  }
+  ol.next b{font-weight:600}
+  ol.next .d{display:block;color:var(--ink-3);font-size:13.5px;line-height:1.5}
+
+  /* ---- flag note ---- */
+  .note{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--warn);
+    border-radius:0 4px 4px 0;
+    padding:20px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .note p{margin:0;color:var(--ink-2);max-width:70ch}
+  .note strong{color:var(--ink)}
+
+  code{
+    font-family:var(--mono);
+    font-size:.88em;
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:1px 5px;
+    border-radius:3px;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:20px;
+    border-top:1px solid var(--rule);
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--ink-3);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+  }
+  a{color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ---- part dividers (merged report) ---- */
+  .part{
+    margin-top:78px;
+    padding:26px 0 24px;
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .part .pnum{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .part h2{
+    font-family:var(--serif);
+    font-size:clamp(26px,4vw,38px);
+    line-height:1.12;
+    letter-spacing:-.015em;
+    margin:0;
+  }
+  .part p{
+    font-family:var(--serif);
+    font-size:clamp(16px,2vw,18.5px);
+    line-height:1.5;
+    color:var(--ink-2);
+    max-width:64ch;
+    margin:0;
+  }
+  .part + .band{margin-top:0}
+  .part + section{padding-top:38px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">
+    <span>Readiness review</span><span class="dot">·</span>
+    <span>MadeEA</span><span class="dot">·</span>
+    <span>Gateway &amp; multi-channel setter</span>
+  </div>
+  <h1>Both tracks are further along than they look. What is left is deciding where the line goes.</h1>
+  <p class="standfirst">
+    The gateway MadeEA OS needs in order to live on a custom domain is already built and
+    tested. The DM setter's sending path already works on four channels without being
+    rewritten. In neither case is the remaining work engineering — it is deciding what gets
+    exposed to the internet, and who gets messaged on which platform.
+  </p>
+</header>
+
+<div class="band">
+  <div class="stat"><b>246</b><span>API routes reviewed</span></div>
+  <div class="stat"><b>83</b><span>Gateway tests passing</span></div>
+  <div class="stat open"><b>15</b><span>Routes with any auth check</span></div>
+  <div class="stat"><b>2</b><span>Lines make the setter IG-only</span></div>
+  <div class="stat hold"><b>2</b><span>Platforms closed outright</span></div>
+</div>
+
+<section>
+  <span class="eyebrow">How to read this</span>
+  <h2>Two tracks, one recurring failure</h2>
+  <p class="lede">
+    Part one is MadeEA OS and the custom domain. Part two is the DM setter and the other social
+    platforms. They are separate builds, and every count in both was measured against the files
+    rather than estimated. They also share a specific defect, which the closing section names —
+    it is worth reading last, once both halves have made the case.
+  </p>
+</section>
+
+<div class="part">
+  <span class="pnum">Part one</span>
+  <h2>MadeEA OS on a custom domain</h2>
+  <p>
+    The gateway you need is already built. The app around it is not ready to be published.
+  </p>
+</div>
+
+<section>
+  <span class="eyebrow">Orientation</span>
+  <h2>Three things call themselves the app</h2>
+  <p class="lede">
+    Picking the wrong one is the most expensive mistake available here, so it is worth being
+    exact before any DNS record is written.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Piece</th><th>What it is</th><th>Belongs on a domain?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>app/</strong><span class="sub">Committed static export — what GitHub Pages and Vercel serve today</span></td>
+        <td>No server. A browser shim answers <code>/api/*</code> by calling a gateway directly</td>
+        <td><span class="pill warn">pages only</span></td>
+      </tr>
+      <tr>
+        <td><strong>source/</strong><span class="sub">The real Next.js 16 server — 246 route handlers</span></td>
+        <td>Spawns CLIs, reads your vault, writes <code>~/.agentic-os</code></td>
+        <td><span class="pill stop">no — keep local</span></td>
+      </tr>
+      <tr>
+        <td><strong>omniroute-team-hub/</strong><span class="sub">Separate repo, already pushed to <code>ThelbertD/omniroute-team-hub</code></span></td>
+        <td>OmniRoute + an authenticating proxy + Caddy. Every route checks a JWT</td>
+        <td><span class="pill ok">yes — this one</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">The good news</span>
+  <h2>The gateway is finished, not hypothetical</h2>
+  <p class="lede">
+    It is a full stack with per-user quotas, admin controls and a shared key pool nobody on the
+    team ever sees. 61 gateway tests and 22 dashboard tests pass, all offline. It is blocked on
+    infrastructure you are about to buy — and on nothing else.
+  </p>
+  <div class="two">
+
+    <div class="flow">
+      <div class="top"><h3>How a request travels</h3><span class="meta">4 hops · 1 public</span></div>
+      <div class="chain">Browser <i>→</i> gateway.yourdomain.com <i>→</i> verify JWT + quota <i>→</i> OmniRoute (127.0.0.1) <i>→</i> provider</div>
+      <ul>
+        <li><b>OmniRoute never faces the internet</b> — it binds loopback only. The authenticating proxy is the sole public process.</li>
+        <li><b>Streaming skips Vercel entirely</b> — the browser calls the gateway directly, so a long reply cannot hit a serverless function timeout.</li>
+        <li><b>The master key lives in one file</b> — the VPS <code>.env</code> at <code>chmod 600</code>. It is in no browser bundle.</li>
+      </ul>
+    </div>
+
+    <div class="flow">
+      <div class="top"><h3>What it already enforces</h3><span class="meta">tested, not asserted</span></div>
+      <p>
+        Each of these is covered by a test that runs with no credentials and no network — the
+        suite boots a stub OmniRoute on loopback.
+      </p>
+      <ul>
+        <li><b>HS256 pinned</b> on every JWT verify, which closes the <code>alg: none</code> confusion attack.</li>
+        <li><b>Admin role read from the database</b> per request, never from the token — a demoted admin loses access immediately.</li>
+        <li><b>Quota rejects at the exact boundary</b>, and a disallowed model is refused before any upstream call is billed.</li>
+        <li><b>An admin cannot lock themselves out</b>, and the passcode hash is unreachable from any browser.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">The honest part</span>
+  <h2>A domain will not make all the AI work</h2>
+  <p class="lede">
+    This is the expectation worth resetting before spending anything. I counted what the 246
+    routes in <code>source/</code> actually depend on.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Dependency</th><th>Routes</th><th>What that means on a public host</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Spawns a local CLI</strong><span class="sub"><code>claude</code>, <code>codex</code>, <code>openclaw</code>, <code>hermes</code>, <code>kimi</code>, <code>grok</code>, <code>ant</code></span></td>
+        <td><strong>33</strong></td>
+        <td>Impossible on serverless. On a VPS it means installing and logging into every one of those CLIs there</td>
+      </tr>
+      <tr>
+        <td><strong>Reads or writes local disk</strong><span class="sub"><code>~/.agentic-os</code>, the Obsidian vault, workspace and preview folders</span></td>
+        <td><strong>105</strong></td>
+        <td>Serverless has no persistent disk. Your vault is on this machine, not the host</td>
+      </tr>
+      <tr>
+        <td><strong>Calls OmniRoute over HTTP</strong><span class="sub">The only pattern that travels cleanly</span></td>
+        <td><strong>2</strong></td>
+        <td><span class="pill ok">works on the domain</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+  <p class="lede" style="margin-top:22px">
+    So the domain delivers chat, model routing and the OmniRoute-backed views — the thing most
+    people mean by "all the AI." It does not deliver Codex, Free Claude Code, OpenClaw, Hermes,
+    the workspace and preview tabs, or anything vault-backed. Those were always going to stay
+    on the machine that holds the files.
+  </p>
+</section>
+
+<section>
+  <span class="eyebrow">Before you deploy anything</span>
+  <h2>Publishing source/ as it stands is a remote shell</h2>
+  <div class="note">
+    <p>
+      <strong>Of 246 route handlers, 15 reference any authorization check.</strong> The other 231
+      are open to anyone who knows the URL. There is no <code>middleware.ts</code> — the Supabase
+      login gate is client-side only, which stops a browser and stops nobody holding curl.
+    </p>
+    <p>
+      Several of those open routes spawn processes with caller-influenced arguments.
+      <strong>Public, unauthenticated, and spawns processes is the definition of remote code
+      execution</strong> on whatever machine runs it. Pointing a domain at <code>source/</code>
+      converts a private tool into that, in one DNS record.
+    </p>
+    <p>
+      The foundation is sound where it exists: <code>supabaseServer.ts</code> forwards the
+      caller's own token rather than a service-role key, so RLS stays load-bearing and one
+      missing check cannot expose everyone. That is the right design. It is simply not applied
+      to 231 of the routes yet.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Two bugs</span>
+  <h2>What will break on day one</h2>
+  <p class="lede">
+    Both are small. Both are guaranteed to bite, and neither is obvious from the symptom.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Found</th><th>Effect</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>The published site points at a dead tunnel</strong><span class="sub"><code>PUBLISHED_GATEWAY</code> hardcodes a <code>trycloudflare.com</code> quick-tunnel URL. Quick tunnels die with the process and never return under the same name</span></td>
+        <td>Almost certainly why the live site reads offline right now. A stable <code>gateway.yourdomain.com</code> is exactly the cure</td>
+        <td><span class="pill warn">one constant — in two files</span></td>
+      </tr>
+      <tr>
+        <td><strong>The shim cannot authenticate to the new gateway</strong><span class="sub">It sends a hardcoded <code>Bearer free-local</code> to <code>/v1/chat/completions</code>, and no header at all to <code>/v1/models</code></span></td>
+        <td>Both return 401 against the team-hub gateway, which verifies a real Supabase JWT. <code>/v1/videos/generations</code> is not proxied and returns 404</td>
+        <td><span class="pill warn">pass the user's token</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+  <div class="note" style="margin-top:20px">
+    <p>
+      <strong>The shim exists in two copies.</strong> <code>app/omni-shim.js</code> is the published
+      one; <code>tools/omni-shim.js</code> is the source that <code>inject-shim.mjs</code> copies
+      over it. Editing only the published copy works until the next rebuild silently reverts it —
+      a failure that looks like the fix never happened. Change both, or change <code>tools/</code>
+      and re-inject.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Recommendation</span>
+  <h2>What to point where</h2>
+  <p class="lede">
+    Two public names, one private machine. The split is what keeps the CLI-driven half of the
+    OS off the internet without giving up the chat half.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Address</th><th>Serves</th><th>Runs on</th></tr></thead>
+    <tbody>
+      <tr><td><strong>yourdomain.com</strong></td><td>The team-hub dashboard — chat, usage, admin</td><td><span class="pill ok">Vercel, free tier</span></td></tr>
+      <tr><td><strong>gateway.yourdomain.com</strong></td><td>Caddy → authenticating proxy → OmniRoute</td><td><span class="pill ok">VPS, ~$5/mo</span></td></tr>
+      <tr><td><strong>127.0.0.1:20128</strong></td><td>OmniRoute itself, reachable only over SSH</td><td><span class="pill ok">same VPS, loopback</span></td></tr>
+      <tr><td><strong>localhost:3000</strong></td><td>The full MadeEA OS with every CLI tab</td><td><span class="pill warn">your machine, unpublished</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">Sequence</span>
+  <h2>The order to do this in</h2>
+  <p class="lede">Each step proves the one below it is worth doing. Do not reorder them.</p>
+  <ol class="next">
+    <li><div><b>Buy the domain and a small Linux VPS</b><span class="d">Hetzner or DigitalOcean at the $5 tier is enough. Point an A record for <code>gateway.</code> at it and let DNS propagate before touching Caddy — the certificate is issued on boot and needs the name to resolve.</span></div></li>
+    <li><div><b>Create the Supabase project and run the migration</b><span class="d">Turn off public signup. The gateway creates users itself, because that is the only path that can check the team passcode.</span></div></li>
+    <li><div><b>Bring up the stack and curl /health</b><span class="d">A JSON <code>ok:true</code> over HTTPS is the whole proof that the hard part worked.</span></div></li>
+    <li><div><b>Deploy the dashboard and set a real passcode</b><span class="d">The seeded hash matches nothing on purpose — nobody can register until an admin replaces it. Confirm chat streams end to end before going further.</span></div></li>
+    <li><div><b>Then fix the shim</b><span class="d">Point it at the new gateway and pass the signed-in user's token instead of the placeholder. Now the existing MadeEA OS export works from any browser.</span></div></li>
+    <li><div><b>Rotate the keys before they travel</b><span class="d"><code>omniroute-team-hub/.env</code> already holds a generated master key and live Supabase secrets. It is correctly gitignored — but it sits inside OneDrive, which syncs it to a cloud account and every machine linked to it. Regenerate all of them, and keep the production copy on the VPS only.</span></div></li>
+    <li><div><b>Only then consider exposing anything from source/</b><span class="d">And only behind a middleware that authenticates every route by default, with the CLI-spawning routes explicitly excluded rather than explicitly allowed.</span></div></li>
+  </ol>
+</section>
+
+<div class="part">
+  <span class="pnum">Part two</span>
+  <h2>The DM setter across social platforms</h2>
+  <p>
+    The setter can reach more platforms than you think — but not the two you probably want most.
+  </p>
+</div>
+
+<section>
+  <span class="eyebrow">Starting point</span>
+  <h2>What runs today</h2>
+  <p class="lede">
+    Three workflows, one brain. Instagram is the only social channel; email already carries the
+    late follow-ups because Instagram will not deliver them.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Workflow</th><th>Channel</th><th>Cadence</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DM setter</strong><span class="sub">Replies to inbound DMs, phase by phase, to the booking link</span></td><td><span class="pill ok">Instagram</span></td><td>every 2 min</td></tr>
+      <tr><td><strong>Day-1 follow-up</strong><span class="sub">F/U 1 at ~20h, then closes the loop</span></td><td><span class="pill ok">Instagram</span></td><td>every 30 min</td></tr>
+      <tr><td><strong>Day 3–7 ladder</strong><span class="sub">F/U 2, F/U 3, Gone Cold — outside Instagram's window by definition</span></td><td><span class="pill ok">Email</span></td><td>every 2 h</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">The good news</span>
+  <h2>The plumbing is already multi-channel</h2>
+  <p class="lede">
+    This is the finding that changes the size of the job. The setter is not written against
+    Instagram — it is written against GoHighLevel's conversation API, which is channel-neutral.
+    Instagram appears in exactly two places.
+  </p>
+  <div class="two">
+
+    <div class="flow">
+      <div class="top"><h3>Reading the inbox</h3><span class="meta">one filter line</span></div>
+      <p>
+        <code>Qualify + Dedup</code> walks the newest conversations and drops anything whose
+        <code>lastMessageType</code> is not Instagram. Every other test in that loop — inbound
+        only, not a teammate, old enough that they have stopped typing, not already handled —
+        is channel-independent.
+      </p>
+      <div class="chain">lastMessageType !== 'TYPE_INSTAGRAM' <i>→</i> continue</div>
+    </div>
+
+    <div class="flow">
+      <div class="top"><h3>Sending the reply</h3><span class="meta">one constant</span></div>
+      <p>
+        <code>Send Bubbles</code> posts to <code>/conversations/messages</code> with
+        <code>type: 'IG'</code>. That same endpoint carries Messenger, WhatsApp, SMS and email —
+        the channel is the value of that one field, not a different integration.
+      </p>
+      <div class="chain">POST /conversations/messages <i>·</i> type: 'IG'</div>
+    </div>
+
+  </div>
+  <p class="lede" style="margin-top:22px">
+    So adding a channel that GoHighLevel already carries is not a rebuild. It is a filter value,
+    a type constant, a tag namespace, and a decision about the delivery window — plus the part
+    that actually takes judgement, which is tone.
+  </p>
+</section>
+
+<section>
+  <span class="eyebrow">Platform by platform</span>
+  <h2>Where each one actually stands</h2>
+  <p class="lede">
+    Verdicts are about access, not effort. A platform with no messaging API cannot be reached
+    by any amount of work that does not also risk the account.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>Platform</th><th>Route in</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Facebook Messenger</strong><span class="sub">Same Meta Graph API family as Instagram, same 24-hour standard messaging window, already carried by GoHighLevel</span></td>
+        <td>Filter + type constant. The window logic already written for Instagram transfers unchanged</td>
+        <td><span class="pill ok">add first</span></td>
+      </tr>
+      <tr>
+        <td><strong>WhatsApp Business</strong><span class="sub">Cloud API. A 24-hour service window like Meta's; outside it only pre-approved template messages may be sent, and messaging is billed</span></td>
+        <td>Carried by GoHighLevel, but templates must be submitted and approved in advance</td>
+        <td><span class="pill warn">viable, with cost</span></td>
+      </tr>
+      <tr>
+        <td><strong>SMS</strong><span class="sub">Native to GoHighLevel, no delivery window at all — the one channel that can carry the full ladder</span></td>
+        <td>Trivially available. The constraint is consent law, not engineering</td>
+        <td><span class="pill warn">viable, different rules</span></td>
+      </tr>
+      <tr>
+        <td><strong>X / Twitter</strong><span class="sub">DM endpoints exist but sit behind a paid API tier with tight rate limits</span></td>
+        <td>Not in GoHighLevel — needs its own integration and its own inbox handling</td>
+        <td><span class="pill warn">conditional</span></td>
+      </tr>
+      <tr>
+        <td><strong>LinkedIn</strong><span class="sub">No public API for personal messaging. Messaging access is partner-gated through the Sales Navigator and Recruiter programmes</span></td>
+        <td>The tools that claim otherwise drive the browser or unofficial endpoints</td>
+        <td><span class="pill stop">closed</span></td>
+      </tr>
+      <tr>
+        <td><strong>TikTok</strong><span class="sub">No public DM API. Business messaging is in-app and limited by region</span></td>
+        <td>Nothing to integrate against</td>
+        <td><span class="pill stop">closed</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+  <p class="lede" style="margin-top:20px">
+    Platform terms move. Confirm the current window rules, tiers and rate cards at the moment
+    you commit to a channel rather than trusting this table months from now — the verdicts are
+    stable, the numbers behind them are not.
+  </p>
+</section>
+
+<section>
+  <span class="eyebrow">Worth flagging</span>
+  <h2>LinkedIn is the one to say no to clearly</h2>
+  <div class="note">
+    <p>
+      For a B2B setter, LinkedIn is usually the first channel anyone asks for and it is the one
+      that cannot be done properly. <strong>There is no general messaging API.</strong> Access
+      exists only inside partner programmes built for licensed Sales Navigator and Recruiter
+      seats, and it is not open to general application.
+    </p>
+    <p>
+      Every off-the-shelf "LinkedIn automation" tool works around this by driving a logged-in
+      browser session or calling endpoints never published for that use. That
+      <strong>violates the User Agreement</strong>, and the enforcement lands on the sending
+      account — restriction or permanent loss of the profile doing the outreach, which for a
+      founder-led brand is the asset the whole channel depends on.
+    </p>
+    <p>
+      The defensible version is a person sending LinkedIn messages with the SOP open beside
+      them. The setter can draft; it should not send. That distinction is worth writing into
+      the plan now, because the tooling that blurs it is easy to buy and hard to unwind.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Do this first</span>
+  <h2>The brain lives in three places, and channels multiply it</h2>
+  <div class="note">
+    <p>
+      The SOP prompt is byte-identical across all three workflow files today, kept in sync by
+      hand — the documentation's own instruction is <strong>"edit one and you must edit all
+      three."</strong> That is already the sharpest edge in the system: a nudge written from a
+      stale copy contradicts the conversation it is chasing, and nothing fails loudly when it
+      happens.
+    </p>
+    <p>
+      Adding Messenger and WhatsApp takes three copies to five or seven.
+      <strong>Extract the SOP and the guard set into one sub-workflow before adding any
+      channel, not after.</strong> Retrofitting a single source of truth onto seven files that
+      have quietly drifted apart is a materially worse job than doing it once at three.
+    </p>
+    <p>
+      The split is clean because most of the system is already channel-independent. The brain,
+      the seven guards and the four silent exits are shared. What is genuinely per-channel is
+      small: the inbound filter, the send type, the delivery window, the tag namespace, and the
+      length rule — two bubbles suits a DM, and does not suit an email.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Decisions</span>
+  <h2>What needs answering before building</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Question</th><th>Why it blocks</th><th>Owner</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Is a cross-channel switch acceptable?</strong><span class="sub">Someone who DM'd on Instagram did not ask to be messaged on WhatsApp. The email ladder already makes this jump once</span></td>
+        <td>Decides whether channels are separate funnels or one identity followed across platforms — a different build, not a setting</td>
+        <td class="who">MadeEA</td>
+      </tr>
+      <tr>
+        <td><strong>Which channel owns the late ladder?</strong><span class="sub">F/U 2 and F/U 3 currently go by email, and only for leads whose address you already hold</span></td>
+        <td>SMS has no delivery window and would close that gap — at the price of a stricter consent standard</td>
+        <td class="who">MadeEA</td>
+      </tr>
+      <tr>
+        <td><strong>One brand voice or one per platform?</strong><span class="sub">An opener that reads natural in an IG DM reads intrusive as a WhatsApp message from an unknown number</span></td>
+        <td>Determines whether the shared SOP takes a per-channel tone layer or stays literally identical</td>
+        <td class="who">MadeEA</td>
+      </tr>
+      <tr>
+        <td><strong>Do the Instagram blockers clear first?</strong><span class="sub">The credential, ids and booking-link decisions still outstanding on the live setter</span></td>
+        <td>A second channel built on an unproven first channel doubles the debugging surface before anything has sent once</td>
+        <td class="who">MadeEA</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">Sequence</span>
+  <h2>The order that costs least</h2>
+  <p class="lede">Deliberately front-loaded with the unglamorous step, because it is the one that gets skipped.</p>
+  <ol class="next">
+    <li><div><b>Get Instagram fully live and read its drafts</b><span class="d">One channel proven end to end teaches more about the SOP than two channels half-built. Every tone correction found here is a correction you do not have to make five times later.</span></div></li>
+    <li><div><b>Extract the SOP and guards into one sub-workflow</b><span class="d">The single highest-value change in this document. Do it at three copies, while they are still identical and the diff is empty.</span></div></li>
+    <li><div><b>Add Facebook Messenger</b><span class="d">Same API family, same window, same GoHighLevel plumbing. It is the cheapest possible test of whether the extraction actually holds — and if it does not, you find out on the easy channel.</span></div></li>
+    <li><div><b>Decide the consent posture, then add WhatsApp or SMS</b><span class="d">Both are reachable today. Neither should ship before the cross-channel question above has an answer someone is willing to put their name to.</span></div></li>
+    <li><div><b>Treat LinkedIn as a drafting surface, not a sending one</b><span class="d">The setter proposes, a person sends. This keeps the highest-value B2B channel open instead of risking the profile it runs on.</span></div></li>
+    <li><div><b>Revisit X and TikTok only on a real signal</b><span class="d">Both cost more than they return at current access levels. Revisit when inbound volume on those platforms justifies it, not on principle.</span></div></li>
+  </ol>
+</section>
+
+<section>
+  <span class="eyebrow">Unchanged by any of this</span>
+  <h2>The setter still does not book anything</h2>
+  <p class="lede">
+    It sends the link. Nothing in any workflow watches a calendar, so "link sent" and "call
+    booked" remain different facts on every channel you add. Adding platforms multiplies the
+    first number and tells you nothing about the second — which makes the gap between them the
+    measurement worth building before the next channel, not after.
+  </p>
+</section>
+
+<div class="part">
+  <span class="pnum">Both tracks</span>
+  <h2>The same defect, in two unrelated systems</h2>
+  <p>
+    Worth naming, because it is the one thing here that is cheap to fix now and expensive later.
+  </p>
+</div>
+
+<section>
+  <div class="note">
+    <p>
+      In MadeEA OS, the browser shim exists in two copies — <code>app/omni-shim.js</code> and
+      <code>tools/omni-shim.js</code> — and the second overwrites the first on every rebuild. In
+      the setter, the SOP prompt exists in three copies across three workflow files, kept
+      identical by hand.
+    </p>
+    <p>
+      <strong>Neither duplication fails loudly.</strong> Fix the shim in one place and the change
+      survives until a rebuild quietly reverts it. Edit the SOP in one workflow and the other two
+      keep running the old brain, contradicting the conversations they are chasing. In both cases
+      the system reports success while doing the wrong thing, which is the most expensive category
+      of bug to own.
+    </p>
+    <p>
+      Both are also at their cheapest right now. The shim copies are still in sync; the three SOP
+      copies are still byte-identical. Every channel added and every deploy made from here widens
+      the diff. <strong>Consolidate each to one source before scaling either track</strong> — it is
+      a smaller task today than it will be at any future point.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <span>MadeEA OS · OmniRoute Team Hub · DM Setter</span>
+  <span>Next.js 16 · Fastify · Caddy · Supabase · n8n · GoHighLevel</span>
+  <span>Measured against the files, not estimated</span>
+</footer>
+
+</div>
+
+</body>
+</html>
